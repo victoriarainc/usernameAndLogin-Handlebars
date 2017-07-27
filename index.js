@@ -17,6 +17,7 @@ app.set('view engine', 'handlebars');
 // for express-session
 app.use(
   session({
+    //in the future this is not how to store passwords
     secret: 'CROWpoe',
     resave: false, // doesn't save without changes
     saveUninitialized: true // creates a session
@@ -46,6 +47,9 @@ app.use(expressValidator());
 //
 //   next();
 // });
+// ======= SUPER DUPER SECURE DATABASE =====
+
+let topsecret = [{username:'Victoria', password:'rattleballs'}];
 
 // ============= ENDPOINTS ===============
 
@@ -66,35 +70,21 @@ app.get('/login', function(req, res) {
 // send information after it is submitted
 app.post('/login', function(req, res) {
   let user = req.body;
-  console.log(user);
-  res.send('You logged in!');
-})
+  // // ============== VALIDATION ================
+  req.checkBody('username', 'Username is required').notEmpty();
+  req.checkBody('password', 'Password please!').notEmpty();
 
-// // ============== VALIDATION ================
-// // validate the food item's data
-// req.checkBody('name', 'Name is required').notEmpty();
-// // make sure that the serving is provided.
-// req.checkBody('serving', 'Serving is required').notEmpty();
-// // make sure that the serving is provided.
-// req.checkBody('serving', 'Serving is must uppercase').isUppercase();
-// // get all errors from our validation that we just did as an array
-// let errors = req.validationErrors();
-//
-// if (errors) {
-//   // there were errors, report them
-//   console.log(errors);
-//
-//   res.render('foodForm', { errors: errors, foodItem: foodItem });
-// } else {
-//   // there were no errors. save the food item
-//
-//   // store the food item in our array of foods
-//   req.session.foods.push(foodItem);
-//
-//   // now that I've added the food item to the array, redirect to the homepage
-//   res.redirect('/');
-// }
-// });
+  let errors = req.validationErrors();
+
+  if (errors) {
+    console.log(errors);
+    res.render('login', {errors: errors});
+  } else {
+    res.redirect('/');
+  }
+});
+
+
 
 // ============== LISTEN =================
 app.listen(3000);
