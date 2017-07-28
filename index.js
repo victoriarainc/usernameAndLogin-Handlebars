@@ -29,36 +29,42 @@ app.use(express.static('public'));
 
 //for bodyParser
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 
 
 // for express-validator
 app.use(expressValidator());
 
-// creates default session
-// app.use((req, res, next) => {
-//   // if we don't already have an array of foods
-//   if (!req.session.foods) {
-//     // then create an empty array of foods
-//     req.session.foods = [];
-//   }
-//
-//   console.log(req.session);
-//
-//   next();
-// });
 // ======= SUPER DUPER SECURE DATABASE =====
 
-let topsecret = [{username:'Victoria', password:'rattleballs'}];
+let topsecret = [{
+    username: 'Doug',
+    password: 'rattleballs'
+  },
+  {
+    username: 'Lexi',
+    password: 'bubblegum'
+  },
+  {
+    username: 'Caitlin',
+    password: 'lemonhope'
+  }
+];
 
 // ============= ENDPOINTS ===============
 
 // path to home
 app.get('/', function(req, res) {
-  if (!req.session.user) {
+  //if the user's info is not stored redirect
+  if (!req.session.victim) {
     res.redirect('/login')
+    //if the user is recognized render the home page
   } else {
-    res.render('home')
+    res.render('home', {
+      username: req.session.victim
+    });
   }
 });
 
@@ -70,6 +76,7 @@ app.get('/login', function(req, res) {
 // send information after it is submitted
 app.post('/login', function(req, res) {
   let user = req.body;
+
   // // ============== VALIDATION ================
   req.checkBody('username', 'Username is required').notEmpty();
   req.checkBody('password', 'Password please!').notEmpty();
@@ -77,10 +84,32 @@ app.post('/login', function(req, res) {
   let errors = req.validationErrors();
 
   if (errors) {
-    console.log(errors);
-    res.render('login', {errors: errors});
+    //if there is an error print it
+    res.render('login', {
+      errors: errors
+    });
   } else {
-    res.redirect('/');
+    //otherwise
+    let users = topsecret.filter(function(userCheck) {
+      return userCheck.username === req.body.username;
+    });
+
+    //if that user does not exist return an error on the login page
+    if (users.length === 0) {
+      let not_a_user = "User not found. Please create an account."
+      res.render('login', {
+        something: not_a_user
+      });
+      return;
+    }
+
+    let user = users[0];
+
+    //if the passwords match direct to the home page
+    if (user.password === req.body.password) {
+      req.session.victim = user.username;
+      res.redirect('/');
+    }
   }
 });
 
