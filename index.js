@@ -109,7 +109,12 @@ app.post('/login', function(req, res) {
     if (user.password === req.body.password) {
       req.session.victim = user.username;
       res.redirect('/');
-    }
+    } else {
+        let not_ur_password = "Donk."
+        res.render('login', {
+          something: not_ur_password
+        });
+      }
   }
 });
 
