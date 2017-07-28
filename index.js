@@ -48,7 +48,7 @@ let topsecret = [{
     password: 'bubblegum'
   },
   {
-    username: 'Caitlin',
+    username: 'Kaitlin',
     password: 'lemonhope'
   }
 ];
