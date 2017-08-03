@@ -2,10 +2,12 @@
 
 const express = require('express');
 const exphbs = require('express-handlebars');
+const session = require('express-session');
+
+const app = express();
+
 const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
-const session = require('express-session');
-const app = express();
 
 // =========BOILER PLATE===========
 
@@ -26,6 +28,9 @@ app.use(
 
 // for express
 app.use(express.static('public'));
+
+
+
 
 //for bodyParser
 app.use(bodyParser.json());
@@ -58,10 +63,10 @@ let topsecret = [{
 // path to home
 app.get('/', function(req, res) {
   //if the user's info is not stored redirect
-  if (!req.session.victim) {
-    res.redirect('/login')
-    //if the user is recognized render the home page
-  } else {
+   if (!req.session.victim) {
+     res.redirect('/login')
+     //if the user is recognized render the home page
+   } else {
     res.render('home', {
       username: req.session.victim
     });
@@ -75,7 +80,7 @@ app.get('/login', function(req, res) {
 
 // send information after it is submitted
 app.post('/login', function(req, res) {
-  let user = req.body;
+  let victim = req.session.body;
 
   // // ============== VALIDATION ================
   req.checkBody('username', 'Username is required').notEmpty();
@@ -85,9 +90,7 @@ app.post('/login', function(req, res) {
 
   if (errors) {
     //if there is an error print it
-    res.render('login', {
-      errors: errors
-    });
+    res.render('login', {errors: errors});
   } else {
     //otherwise
     let users = topsecret.filter(function(userCheck) {
@@ -97,9 +100,7 @@ app.post('/login', function(req, res) {
     //if that user does not exist return an error on the login page
     if (users.length === 0) {
       let not_a_user = "User not found. Please create an account."
-      res.render('login', {
-        something: not_a_user
-      });
+      res.render('login', {notAUserMessage: not_a_user});
       return;
     }
 
@@ -111,14 +112,27 @@ app.post('/login', function(req, res) {
       res.redirect('/');
     } else {
         let not_ur_password = "Donk."
-        res.render('login', {
-          something: not_ur_password
-        });
+        res.render('login', {something: not_ur_password});
       }
   }
 });
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ============== LISTEN =================
-app.listen(3000);
+app.listen(3000, function() {
+  console.log('Your app is running!')
+});

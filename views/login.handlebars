@@ -14,18 +14,24 @@
       <!-- this is the page that will display for /login
       one form that has username and password inputs
       and only one submit button -->
+
+      <!-- error handling -->
       <ul class="error">
         {{#errors}}
           <li>{{msg}}</li>
         {{/errors}}
       </ul>
+
+      <!-- form -->
       <form id="input" action="/login" method="POST">
-        <input class="input" type="text" name="username" placeholder="Login" value="">
-        <input class="input" type="password" name="password" placeholder="Password" value="">
-        <input class="button" type="submit" name="" value="login">
+        <input class="input" type="text" name="username" placeholder="Login" value=""/>
+        <input class="input" type="password" name="password" placeholder="Password" value=""/>
+        <input class="button" type="submit" name="" value="login"/>
       </form>
+
+
       <div id="notAUser" class="error">
-        {{something}}
+        {{notAUserMessage}}
       </div>
     </section>
   </article>
